@@ -1,18 +1,9 @@
 package com.kv026205.sunshinenew.app;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -23,7 +14,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
     }
@@ -49,43 +40,5 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            List<String> forecastArray = createFakeWeatherData();
-
-            ArrayAdapter<String> forecastAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_view, forecastArray);
-
-            ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
-            listView.setAdapter(forecastAdapter);
-
-            return rootView;
-        }
-
-        private ArrayList<String> createFakeWeatherData()
-        {
-            ArrayList<String> fakeWeatherData = new ArrayList<String>();
-
-            fakeWeatherData.add("Today - Sunny - 88/63");
-            fakeWeatherData.add("Tomorrow - Foggy - 70/46");
-            fakeWeatherData.add("Weds - Cloudy - 70/63");
-            fakeWeatherData.add("Thurs - Rainy - 70/63");
-            fakeWeatherData.add("Fri - Foggy - 70/63");
-            fakeWeatherData.add("Sat - Sunny - 70/63");
-
-            return fakeWeatherData;
-        }
     }
 }
