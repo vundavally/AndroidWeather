@@ -145,6 +145,18 @@ public class ForecastFragment extends Fragment {
         toast.show();
     }
 
+    private double convertMetricToImperial(double metricTemperature)
+    {
+        double imperialTemperature = ((metricTemperature * 9)/5) + 32;
+        return imperialTemperature;
+    }
+
+    private double convertImperialToMetric(double imperialTemperature)
+    {
+        double metricTemperature = (5 * (imperialTemperature - 32)) / 9 ;
+        return metricTemperature;
+    }
+
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
     {
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -350,6 +362,17 @@ public class ForecastFragment extends Fragment {
                 JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
+
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String temperatureUnits = preferences.getString(getString(R.string.pref_temperature_units_key),
+                        getString(R.string.pref_temperature_units_default_value));
+
+                if(temperatureUnits.equals("imperial"))
+                {
+                    high = convertMetricToImperial(high);
+                    low = convertMetricToImperial(low);
+                }
+
 
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
