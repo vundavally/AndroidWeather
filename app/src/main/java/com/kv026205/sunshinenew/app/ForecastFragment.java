@@ -1,9 +1,11 @@
 package com.kv026205.sunshinenew.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -32,7 +34,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A forecast fragment containing a simple view.
@@ -54,23 +55,43 @@ public class ForecastFragment extends Fragment {
         inflater.inflate(R.menu.forecastfragment, menu);
     }
 
+    /**
+     * Called when the Fragment is visible to the user.  This is generally
+     * tied to Activity#onStart() Activity.onStart of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int id = item.getItemId();
 
         if(id == R.id.action_refresh)
         {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            String postalCode = "94043";
-            String mode = "json";
-            String units = "metric";
-            String numberOfDays = "7";
-            String[] fetchWeatherArray = new String[7];
-            weatherTask.execute(new String[] {postalCode, mode, units, numberOfDays});
+            updateWeather();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateWeather()
+    {
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String postalCode = preferences.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default_value));
+
+        String mode = "json";
+        String units = "metric";
+        String numberOfDays = "7";
+
+        weatherTask.execute(new String[] {postalCode, mode, units, numberOfDays});
     }
 
     public ForecastFragment() {
@@ -81,14 +102,11 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-
-        List<String> forecastArray = createFakeWeatherData();
-
         mForecastAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_view,
-                forecastArray);
+                new ArrayList<String>());
 
         ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
@@ -104,7 +122,7 @@ public class ForecastFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, mForecastAdapter.getItem(position));
 
-                if(intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(intent);
                 }
             }
@@ -125,20 +143,6 @@ public class ForecastFragment extends Fragment {
         toast.setDuration(Toast.LENGTH_LONG);
         toast.setView(layout);
         toast.show();
-    }
-
-    private ArrayList<String> createFakeWeatherData()
-    {
-        ArrayList<String> fakeWeatherData = new ArrayList<String>();
-
-        fakeWeatherData.add("Today - Sunny - 88/63");
-        fakeWeatherData.add("Tomorrow - Foggy - 70/46");
-        fakeWeatherData.add("Weds - Cloudy - 70/63");
-        fakeWeatherData.add("Thurs - Rainy - 70/63");
-        fakeWeatherData.add("Fri - Foggy - 70/63");
-        fakeWeatherData.add("Sat - Sunny - 70/63");
-
-        return fakeWeatherData;
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]>
