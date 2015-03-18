@@ -42,6 +42,10 @@
                 <action android:name="android.intent.action.HEADSET_PLUG"/>
             </intent-filter>
         </receiver>
+
+        <provider
+            android:authorities="com.kv026205.sunshinenew.app"
+            android:name="com.kv026205.sunshinenew.app.data.WeatherProvider"/>
     </application>
 
 </manifest>

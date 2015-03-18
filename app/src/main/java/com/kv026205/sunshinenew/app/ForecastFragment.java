@@ -383,8 +383,8 @@ public class ForecastFragment extends Fragment {
                 double low = temperatureObject.getDouble(OWM_MIN);
 
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String temperatureUnits = preferences.getString(getString(R.string.pref_temperature_units_key),
-                        getString(R.string.pref_temperature_units_default_value));
+                String temperatureUnits = preferences.getString(getString(R.string.pref_units_key),
+                        getString(R.string.pref_units_default_value));
 
                 if(temperatureUnits.equals("imperial"))
                 {
